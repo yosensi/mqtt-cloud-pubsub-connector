@@ -56,15 +56,4 @@ public class MqttToCloudPubSubRouteTest {
     assertThat(mqttToCloudPubSubRouteId)
         .startsWith(MqttToCloudPubSubRoute.MQTT_TO_CLOUD_PUB_SUB_ROUTE_ID_PREFIX);
   }
-
-  @Test
-  public void testMqttToCloudPubSubFromSourceTopicMqttClientId() {
-    String mqttToCloudPubSubRouteMqttClientId =
-        mqttToCloudPubSubRoute.getFromSourceTopicMqttClientId();
-    assertThat(mqttToCloudPubSubRouteMqttClientId).isNotBlank();
-    assertThat(mqttToCloudPubSubRouteMqttClientId)
-        .startsWith(
-            MqttToCloudPubSubRoute.MQTT_CLIENT_ID_PREFIX
-                + MqttToCloudPubSubRoute.MQTT_CLIENT_ID_FROM_SOURCE_TOPIC_PREFIX);
-  }
 }

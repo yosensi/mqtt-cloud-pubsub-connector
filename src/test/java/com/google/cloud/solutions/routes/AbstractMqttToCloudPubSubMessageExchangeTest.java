@@ -176,8 +176,7 @@ public abstract class AbstractMqttToCloudPubSubMessageExchangeTest {
   public void testRouteUnsecuredMqttMessageToCloudPubSub() {
     // Set a MQTT client ID that we use in this test to check a few things, such as
     // if the client actually connected to the MQTT broker
-    String testMqttClientId =
-        MqttToCloudPubSubRoute.MQTT_CLIENT_ID_PREFIX + "test-client-" + UUID.randomUUID();
+    String testMqttClientId = "test-client-" + UUID.randomUUID();
 
     assertThat(mqttBrokerContainer).isNotNull();
 
@@ -256,16 +255,6 @@ public abstract class AbstractMqttToCloudPubSubMessageExchangeTest {
 
     // Check that the test MQTT clinet disconnected
     assertMqttClientDisconnected(mqttBrokerContainer.getLogs(), testMqttClientId);
-
-    // Check that the Apache Camel route connected to the MQTT broker, and
-    // subscribed to an MQTT topic.
-    // We don't test the disconnection because Quarkus shuts down the route after
-    // the test is completed.
-    String mqttToCloudPubSubRouteClientId = mqttToCloudPubSubRoute.getFromSourceTopicMqttClientId();
-    assertMqttClientConnected(mqttBrokerContainer.getLogs(), mqttToCloudPubSubRouteClientId);
-    // We don't need to test multiple subscriptions because we use MQTT wildcards for that use case
-    assertMqttClientSubscribedToTopic(
-        mqttBrokerContainer.getLogs(), mqttToCloudPubSubRouteClientId, mqttTopic);
 
     // Assert that the Cloud Pub/Sub client that the route creates connected to
     // the Cloud Pub/Sub emulator

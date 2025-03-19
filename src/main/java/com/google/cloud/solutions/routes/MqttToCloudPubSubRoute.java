@@ -38,8 +38,6 @@ public class MqttToCloudPubSubRoute extends RouteBuilder {
   public static final String MQTT_TOPIC_PROPERTY_KEY =
       "com.google.cloud.solutions.mqtt-client.mqtt-topic";
 
-  public static final String MQTT_CLIENT_ID_PREFIX = "camel-paho-";
-  public static final String MQTT_CLIENT_ID_FROM_SOURCE_TOPIC_PREFIX = "from-source-topic-";
   public static final String MQTT_TO_CLOUD_PUB_SUB_ROUTE_ID_PREFIX = "mqtt-to-cloud-pubsub-route-";
 
   public static final String SOURCE_MQTT_TOPIC_HEADER_NAME = "source-mqtt-topic-name";
@@ -52,8 +50,6 @@ public class MqttToCloudPubSubRoute extends RouteBuilder {
   @Inject
   String cloudPubSubDestinationTopicName;
 
-  private String mqttFromSourceTopicClientId;
-
   private String mqttToCloudPubSubRouteId;
 
   @ConfigProperty(name = MQTT_TOPIC_PROPERTY_KEY)
@@ -62,8 +58,6 @@ public class MqttToCloudPubSubRoute extends RouteBuilder {
 
   public MqttToCloudPubSubRoute() {
     UUID uuid = UUID.randomUUID();
-    mqttFromSourceTopicClientId =
-        MQTT_CLIENT_ID_PREFIX + MQTT_CLIENT_ID_FROM_SOURCE_TOPIC_PREFIX + uuid;
     mqttToCloudPubSubRouteId = MQTT_TO_CLOUD_PUB_SUB_ROUTE_ID_PREFIX + uuid;
   }
 
@@ -73,14 +67,7 @@ public class MqttToCloudPubSubRoute extends RouteBuilder {
     supervising.setBackOffDelay(200);
     supervising.setIncludeRoutes("paho-mqtt5:*");
 
-    // Configure the client id as an endpoint parameter instead of using a component
-    // parameter (and the corresponding property)
-    // so that we can have each client connecting with its own (dynamically
-    // generated) unique client id. See
-    // https://camel.apache.org/components/3.18.x/paho-mqtt5-component.html for
-    // details about the configuration options
-    String routeStart =
-        "paho-mqtt5:" + mqttSourceTopic + "?" + "clientId=" + mqttFromSourceTopicClientId;
+    String routeStart = "paho-mqtt5:" + mqttSourceTopic;
 
     String routeDestination =
         "google-pubsub:" + cloudPubSubProjectId + ":" + cloudPubSubDestinationTopicName;
@@ -99,10 +86,6 @@ public class MqttToCloudPubSubRoute extends RouteBuilder {
               exchange.getIn().setHeader(GooglePubsubConstants.ATTRIBUTES, headers);
             })
         .to(routeDestination);
-  }
-
-  public String getFromSourceTopicMqttClientId() {
-    return mqttFromSourceTopicClientId;
   }
 
   public String getMqttToCloudPubSubRouteId() {
